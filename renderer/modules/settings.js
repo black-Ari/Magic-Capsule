@@ -87,6 +87,8 @@ async function generalPage() {
       status,
       slider('Snooze duration', s().snoozeMinutes, 5, 240, ' min', (snoozeMinutes) => saveSettings({ snoozeMinutes }), { step: 5 }),
       toggle('Switch tools with left and right arrows', s().arrowTabs, (arrowTabs) => saveSettings({ arrowTabs }), 'Alt+Shift+arrows also work while typing')),
+    section('Performance',
+      toggle('Use the graphics card', s().useGraphicsCard, (useGraphicsCard) => saveSettings({ useGraphicsCard }), 'Off uses less memory. Restart Nook after changing this.')),
     section('Hiding',
       toggle('Auto-hide', s().autoHide, (autoHide) => saveSettings({ autoHide }), 'Leaves a thin line at the top. Alerts still come down.'),
       toggle('Step aside for full-screen apps', s().hideInFullscreen, (hideInFullscreen) => saveSettings({ hideInFullscreen })),
