@@ -5,8 +5,8 @@
   "description": "A personal notch for Windows: music, calendar, tasks, clipboard, file shelf, phone drop, AI and more.",
   "main": "main.js",
   "private": true,
-  "author": "via",
-  "license": "UNLICENSED",
+  "author": "black-Ari",
+  "license": "MIT",
   "repository": { "type": "git", "url": "https://github.com/black-Ari/Magic-Capsule.git" },
   "homepage": "https://github.com/black-Ari/Magic-Capsule",
   "dependencies": {

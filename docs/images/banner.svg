@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 340" role="img" aria-label="Magic Capsule, a smart notch for Windows">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#090c11"/>
+      <stop offset="1" stop-color="#141c26"/>
+    </linearGradient>
+    <radialGradient id="glow">
+      <stop offset="0" stop-color="#6fb8ff" stop-opacity=".5"/>
+      <stop offset=".55" stop-color="#6fb8ff" stop-opacity=".12"/>
+      <stop offset="1" stop-color="#6fb8ff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1280" height="340" rx="22" fill="url(#sky)"/>
+  <ellipse cx="640" cy="104" rx="320" ry="150" fill="url(#glow)"/>
+  <rect x="520" y="58" width="240" height="84" rx="42" fill="#040507" stroke="#8ccaff" stroke-opacity=".55" stroke-width="2"/>
+  <circle cx="714" cy="100" r="22" fill="#8ccaff"/>
+  <text x="640" y="232" text-anchor="middle" fill="#f5f8fc" font-family="Segoe UI, system-ui, -apple-system, Helvetica, Arial, sans-serif" font-size="68" font-weight="700" letter-spacing="-1">Magic Capsule</text>
+  <text x="640" y="282" text-anchor="middle" fill="#a3b5c8" font-family="Segoe UI, system-ui, -apple-system, Helvetica, Arial, sans-serif" font-size="26">A smart notch for Windows</text>
+</svg>

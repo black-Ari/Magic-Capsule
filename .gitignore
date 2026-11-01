@@ -8,3 +8,7 @@ dist/
 lib/helper-service.exe
 scripts/baseline-*.json
 scripts/measure-*.json
+
+# Notes for AI tools, kept on this PC only
+.agents/
+GEMINI.md
