@@ -66,8 +66,10 @@ const shape = (value) => Object.fromEntries(Object.entries(value).map(([key, ite
   assert.equal(fast.locks, slow.locks);
   assert.deepEqual(shape(fast.net), shape(slow.net));
   assert.deepEqual(shape(fast.events.foreground), shape(slow.events.foreground));
-  assert.equal(fast.events.foreground.app, slow.events.foreground.app);
-  assert.equal(fast.events.foreground.fullscreen, slow.events.foreground.fullscreen);
+  if (fast.events.foreground.pid === slow.events.foreground.pid) { // you may have switched apps between the two
+    assert.equal(fast.events.foreground.app, slow.events.foreground.app);
+    assert.equal(fast.events.foreground.fullscreen, slow.events.foreground.fullscreen);
+  }
   if (fast.events.media) {
     assert.deepEqual(shape(fast.events.media), shape(slow.events.media));
     for (const key of ['app', 'title', 'artist', 'album', 'playing', 'duration', 'canSeek']) assert.equal(fast.events.media[key], slow.events.media[key], key);
