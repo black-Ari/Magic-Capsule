@@ -412,7 +412,10 @@ const methods = {
   'announce': (message) => send('announce', message),
 
   'media.action': (action, seconds) => helper.call('media', { action, seconds }),
-  'media.refresh': () => helper.call('media.refresh'),
+  'media.refresh': () => {
+    lastForPet = ''; // the page may have just loaded and missed it
+    return helper.call('media.refresh');
+  },
   'volume.get': () => helper.call('volume.get'),
   'volume.set': (percent) => helper.call('volume.set', { percent }),
   'volume.mute': () => helper.call('volume.mute'),

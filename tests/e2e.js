@@ -940,7 +940,9 @@ async function step(name, fn) {
     await call('settings.set', { pet: { ...settings.pet, name: 'Mochi', side: 'center', walk: false, play: false } });
     await page.reload();
     await page.waitForSelector('#pet svg', { state: 'attached' });
-    assert.match(await page.locator('#pet .pet-bubble').textContent(), /Mochi/, 'it says its name');
+    // By day it says its name, and at night it only says good night, so the clock decides what to expect.
+    const { say } = await page.evaluate(async (hour) => (await import('./pet-acts.mjs')).greeting(hour, 'Mochi'), new Date().getHours());
+    assert.equal(await page.locator('#pet .pet-bubble').textContent(), say, 'it greets you');
     await page.waitForTimeout(2200);
     assert.equal(await page.locator('#pet .pet-art').getAttribute('title'), 'Mochi');
     const before = (await page.locator('#pet').boundingBox()).x;

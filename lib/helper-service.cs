@@ -33,6 +33,7 @@ static class HelperService {
   static string volumeKey = "";
   static string lockState;
   static uint clipSeq;
+  static bool pageListening;
 
   static Dictionary<string, object> Data(params object[] pairs) {
     Dictionary<string, object> data = new Dictionary<string, object>();
@@ -123,7 +124,9 @@ static class HelperService {
     }
   }
 
+  // The page takes its first report as the starting level, and this program starts before the page does.
   static void UpdateVolume() {
+    if (!pageListening) return;
     NookVolume volume = NookNative.GetVolume();
     string key = volume.Percent + "|" + volume.Muted;
     if (key == volumeKey) return;
@@ -220,6 +223,7 @@ static class HelperService {
         return done;
       }
       case "media.refresh":
+        pageListening = true;
         mediaKey = "";
         artKey = "";
         return null;
