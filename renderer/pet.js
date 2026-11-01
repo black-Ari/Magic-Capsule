@@ -238,7 +238,7 @@ function resetWalk() {
 
 export async function checkMemory() {
   if (!state.settings.pet.on) return;
-  const stats = await call('system.stats').catch(() => null);
+  const stats = await call('system.memory').catch(() => null);
   if (!stats) return;
   const used = (1 - stats.memFree / stats.memTotal) * 100;
   if (used >= MEMORY_HIGH && !memoryWarned) {

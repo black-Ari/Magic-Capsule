@@ -424,6 +424,7 @@ const methods = {
   'control.action': (name) => pc.action(name),
   'control.open': (name) => pc.open(name),
   'system.stats': systemStats,
+  'system.memory': () => ({ memTotal: os.totalmem(), memFree: os.freemem() }),
   'system.top': () => helper.call('top.apps'),
 
   'wifi.scan': () => wifi.scan(),
