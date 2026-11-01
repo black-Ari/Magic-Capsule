@@ -8,7 +8,10 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 
+// Someone who used this app when it was called Nook keeps their keys, chats and settings where they are.
+const oldData = path.join(app.getPath('appData'), 'Nook');
 if (process.env.NOOK_USER_DATA) app.setPath('userData', process.env.NOOK_USER_DATA);
+else if (fs.existsSync(oldData)) app.setPath('userData', oldData);
 
 const {
   CLAUDE_MODELS, CLEARABLE, LAYOUT_SETTINGS, MODULE_IDS, NESTED_SETTINGS, RENDERER_STORES, SETTINGS,
@@ -221,7 +224,7 @@ function clearData(ns) {
   fleet.each(restartRenderer);
 }
 
-const BACKUP_FILTER = [{ name: 'Nook backup', extensions: ['nook'] }];
+const BACKUP_FILTER = [{ name: 'Magic Capsule backup', extensions: ['capsule', 'nook'] }];
 const MAX_SKILL_BYTES = 256 * 1024;
 
 async function pickFolder(title) {
@@ -259,8 +262,8 @@ async function withDialog(show) {
 
 async function exportBackup() {
   const { canceled, filePath } = await withDialog((win) => dialog.showSaveDialog(win, {
-    title: 'Save Nook backup',
-    defaultPath: path.join(app.getPath('documents'), `Nook backup ${new Date().toISOString().slice(0, 10)}.nook`),
+    title: 'Save Magic Capsule backup',
+    defaultPath: path.join(app.getPath('documents'), `Magic Capsule backup ${new Date().toISOString().slice(0, 10)}.capsule`),
     filters: BACKUP_FILTER,
   }));
   if (canceled || !filePath) return false;
@@ -270,7 +273,7 @@ async function exportBackup() {
 
 async function importBackup() {
   const { canceled, filePaths } = await withDialog((win) => dialog.showOpenDialog(win, {
-    title: 'Restore Nook backup', filters: BACKUP_FILTER, properties: ['openFile'],
+    title: 'Restore Magic Capsule backup', filters: BACKUP_FILTER, properties: ['openFile'],
   }));
   if (canceled || !filePaths.length) return false;
   backup.read(filePaths[0]);
@@ -561,9 +564,9 @@ function setupHelper() {
 
 function setupTray() {
   tray = new Tray(nativeImage.createFromPath(ICON).resize({ width: 16 }));
-  tray.setToolTip('Nook');
+  tray.setToolTip('Magic Capsule');
   tray.setContextMenu(Menu.buildFromTemplate([
-    { label: 'Open Nook', click: () => fleet.underCursor().open('key') },
+    { label: 'Open Magic Capsule', click: () => fleet.underCursor().open('key') },
     { label: 'Settings', click: () => fleet.underCursor().open('key', 'settings') },
     { label: 'Show the notch', click: () => fleet.each((notch) => notch.restore()) },
     { label: 'Hide the notch', click: () => fleet.each((notch) => notch.setTucked(true)) },
@@ -602,7 +605,7 @@ function setup() {
   });
   shelf = new Shelf({ onChange: (items) => send('shelf', items) });
   drop = new PhoneDrop({
-    saveDir: () => path.join(app.getPath('downloads'), 'Nook Drop'),
+    saveDir: () => path.join(app.getPath('downloads'), 'Magic Capsule Drop'),
     listFiles: () => shelf.items().filter((item) => !item.isDir && !item.missing),
     onFile: (file) => {
       shelf.add([file]);
@@ -650,7 +653,7 @@ if (app.requestSingleInstanceLock()) {
   app.on('will-quit', () => {
     globalShortcut.unregisterAll();
     if (drop) drop.stop();
-    if (agent) agent.stop('Nook closed.');
+    if (agent) agent.stop('Magic Capsule closed.');
     if (browser) browser.close();
     if (helper) helper.stop();
     store.flush();

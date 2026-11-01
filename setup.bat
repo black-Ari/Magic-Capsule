@@ -8,7 +8,8 @@ pushd "%WORKSPACE%"
 call npm install --no-audit --no-fund || goto :failed
 call node node_modules\electron\install.js || goto :failed
 popd
-echo Setup finished. Start Nook with run.bat
+node "%~dp0scripts\build-helper.js" || echo The small helper was not built, so PowerShell will do its work.
+echo Setup finished. Start Magic Capsule with run.bat
 exit /b 0
 
 :failed

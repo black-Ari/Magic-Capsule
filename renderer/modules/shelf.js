@@ -125,7 +125,7 @@ export default {
     message = h('div', { class: 'error' });
     view.append(
       viewTitle('Shelf', h('button', { class: 'btn', type: 'button', onClick: () => call('shelf.pick') }, icon('plus', 15), 'Add files')),
-      h('div', { class: 'dropzone' }, icon('shelf', 18), 'Drop files anywhere on Nook'),
+      h('div', { class: 'dropzone' }, icon('shelf', 18), 'Drop files anywhere on Magic Capsule'),
       list, message, actions,
     );
     draw();

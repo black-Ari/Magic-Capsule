@@ -129,7 +129,7 @@ function startChoices() {
       pick('Ask me each time', !all && !turbo, async () => { await setTurbo(false); await setSessionAll(false); }),
       pick('Allow for this session', all, async () => { await setTurbo(false); await setSessionAll(true); }),
       turboButton('Turbo', `btn ${turbo ? 'primary' : ''}`)),
-    h('div', { class: 'faint' }, 'This session lasts until you press New chat or close Nook. Turbo stays on until you turn it off, and runs commands, changes files and deletes without asking, so use it only with an AI and sites you trust.'));
+    h('div', { class: 'faint' }, 'This session lasts until you press New chat or close Magic Capsule. Turbo stays on until you turn it off, and runs commands, changes files and deletes without asking, so use it only with an AI and sites you trust.'));
 }
 
 function newChat() {

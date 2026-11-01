@@ -1,4 +1,4 @@
-# Quick settings for the Control tab. helper.ps1 loads this the first time it is needed, so a Nook that
+# Quick settings for the Control tab. helper.ps1 loads this the first time it is needed, so a Magic Capsule that
 # never opens the tab does not carry it. Functions are declared script: to outlive that first call.
 Add-Type -Path (Join-Path $PSScriptRoot 'helper-control.cs')
 $null = [Windows.Devices.Radios.Radio, Windows.System.Devices, ContentType = WindowsRuntime]

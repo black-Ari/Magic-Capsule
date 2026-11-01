@@ -1,7 +1,7 @@
 'use strict';
 
 // Drives the real app. Usage: node tests/e2e.js <folder for screenshots>
-// Runs against a throwaway data folder, so it never touches your real Nook data.
+// Runs against a throwaway data folder, so it never touches your real Magic Capsule data.
 const assert = require('assert');
 const fs = require('fs');
 const os = require('os');
@@ -430,7 +430,7 @@ async function step(name, fn) {
     assert.ok(parsed.data.tasks.length > 0 && parsed.data.notes.length > 0);
     assert.ok(!saved.includes('secret-test-key-123') && !('clipboard' in parsed.data));
     fs.writeFileSync(`${file}.bad`, '{"hello":1}');
-    await assert.rejects(call('backup.import'), /not a Nook backup/);
+    await assert.rejects(call('backup.import'), /not a Magic Capsule backup/);
     await call('ai.setKey', 'gemini', '');
   });
 
@@ -719,7 +719,7 @@ async function step(name, fn) {
 
     await page.keyboard.type('/bus');
     await page.waitForSelector(`${view} .skill-menu:not([hidden]) .skill-use:has-text("/business-documents")`);
-    assert.equal(await buddy.getAttribute('data-mood'), 'typing', 'typing in Nook');
+    assert.equal(await buddy.getAttribute('data-mood'), 'typing', 'typing in Magic Capsule');
     await shot('96-skill-menu');
     await page.click(`${view} .skill-use:has-text("/business-documents")`);
     assert.equal(await page.inputValue(`${view} [aria-label="Message"]`), '/business-documents ');
@@ -856,7 +856,7 @@ async function step(name, fn) {
     await call('store.set', 'notes', [{ id: 'other', text: 'Changed afterwards', at: 2 }]);
     assert.equal(await call('backup.import'), true);
     assert.equal((await call('store.get', 'notes', []))[0].text, 'Keep this note');
-    assert.equal(await app.evaluate(() => global.relaunched), 1, 'Nook restarts to load it');
+    assert.equal(await app.evaluate(() => global.relaunched), 1, 'Magic Capsule restarts to load it');
     await app.evaluate(({ app: electronApp }) => Object.assign(electronApp, global.realApp)); // or the test can never quit
     await call('store.set', 'notes', []);
   });

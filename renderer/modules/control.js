@@ -116,7 +116,7 @@ async function loadControl(tries = RADIO_RETRIES) {
     const [next, vpns] = await Promise.all([call('control.state'), call('control.vpn')]);
     control = { ...next, vpnConnected: vpns.some((vpn) => vpn.connected) };
     ui.status.textContent = '';
-    // Right after Nook starts, Windows can answer before it has listed the radios.
+    // Right after Magic Capsule starts, Windows can answer before it has listed the radios.
     if (tries > 0 && next.wifi === null) setTimeout(() => loadControl(tries - 1), RADIO_RETRY_MS);
   } catch (err) {
     ui.status.textContent = cleanError(err);

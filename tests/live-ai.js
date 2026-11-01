@@ -1,6 +1,6 @@
 'use strict';
 
-// A tiny check against your real AI provider, using the key saved in Nook. It costs one or two small
+// A tiny check against your real AI provider, using the key saved in Magic Capsule. It costs one or two small
 // requests, prints the key's last 4 characters at most, and does not touch your chat history.
 // node tests/live-ai.js          one short chat message
 // node tests/live-ai.js agent    also one agent task, which sends one screenshot to your provider

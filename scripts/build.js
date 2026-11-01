@@ -7,6 +7,7 @@ const { execFileSync, execSync } = require('child_process');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
+const buildHelper = require('./build-helper');
 
 const PROJECT = path.join(__dirname, '..');
 const WORKSPACE = path.join(os.homedir(), '.build_workspaces', 'poni');
@@ -14,7 +15,7 @@ const STAGE = path.join(WORKSPACE, 'stage');
 const OUTPUT = path.join(WORKSPACE, 'dist');
 const ELECTRON = path.join(WORKSPACE, 'node_modules', 'electron');
 const INCLUDED = ['main.js', 'preload.js', 'package.json', 'lib', 'renderer', 'assets'];
-const KEEP_LOCALES = new Set(['en-US.pak', 'en-GB.pak', 'hi.pak']); // the rest only translate built-in menus Nook never shows
+const KEEP_LOCALES = new Set(['en-US.pak', 'en-GB.pak', 'hi.pak']); // the rest only translate built-in menus Magic Capsule never shows
 const INNO_FOLDERS = ['Inno Setup 7', 'Inno Setup 6'];
 const INNO_ROOTS = [process.env.ProgramFiles, process.env['ProgramFiles(x86)'], path.join(process.env.LOCALAPPDATA || '', 'Programs')];
 
@@ -28,6 +29,7 @@ function findInno() {
 }
 
 const inno = findInno();
+buildHelper();
 fs.rmSync(STAGE, { recursive: true, force: true });
 fs.rmSync(OUTPUT, { recursive: true, force: true });
 fs.mkdirSync(STAGE, { recursive: true });

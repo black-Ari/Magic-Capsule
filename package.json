@@ -1,12 +1,14 @@
 {
-  "name": "nook-notch",
-  "productName": "Nook",
+  "name": "magic-capsule",
+  "productName": "Magic Capsule",
   "version": "0.1.0",
   "description": "A personal notch for Windows: music, calendar, tasks, clipboard, file shelf, phone drop, AI and more.",
   "main": "main.js",
   "private": true,
   "author": "via",
   "license": "UNLICENSED",
+  "repository": { "type": "git", "url": "https://github.com/black-Ari/Magic-Capsule.git" },
+  "homepage": "https://github.com/black-Ari/Magic-Capsule",
   "dependencies": {
     "@anthropic-ai/sdk": "^1.3.0",
     "@modelcontextprotocol/sdk": "^1.32.2",
@@ -19,7 +21,7 @@
   },
   "build": {
     "appId": "local.personal.nook",
-    "productName": "Nook",
+    "productName": "Magic Capsule",
     "publish": null,
     "asar": true,
     "asarUnpack": ["lib/helper-service.exe", "lib/helper.ps1", "lib/helper-native.cs", "lib/helper-ui.cs", "lib/helper-control.ps1", "lib/helper-control.cs"],

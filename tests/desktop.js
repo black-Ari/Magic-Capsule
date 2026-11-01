@@ -170,13 +170,13 @@ async function step(name, fn) {
       native('[T]::Chord(0x12, 0x73)'); // Alt+F4, the way an app is really closed
       await sleep(900);
       assert.notEqual(foregroundTitle(), 'NookFocusProbe', 'probe should have closed');
-      assert.notEqual(foregroundTitle(), 'Nook', 'closing an app must not hand focus to the hidden pill');
+      assert.notEqual(foregroundTitle(), 'Magic Capsule', 'closing an app must not hand focus to the hidden pill');
     } finally {
       probe.kill();
     }
   });
 
-  await step('if an app crashes and Windows picks the closed notch, Nook hands focus back', async () => {
+  await step('if an app crashes and Windows picks the closed notch, Magic Capsule hands focus back', async () => {
     const crash = spawn('powershell.exe', ['-NoProfile', '-STA', '-Command', `
       Add-Type -AssemblyName System.Windows.Forms
       $form = New-Object System.Windows.Forms.Form
@@ -192,7 +192,7 @@ async function step(name, fn) {
     assert.equal(seen, 'NookCrashProbe', 'probe window never reached the foreground');
     crash.kill();
     await sleep(2800); // the helper reports the foreground once a second
-    assert.notEqual(title(), 'Nook');
+    assert.notEqual(title(), 'Magic Capsule');
   });
 
   await step('clicking a tab does not keep it open, and focus returns when it closes', async () => {
@@ -245,11 +245,11 @@ async function step(name, fn) {
     const after = await call('volume.get');
     await call('settings.set', { volumeHud: false });
     await call('settings.set', { volumeHud: true }); // puts the real handler back
-    assert.equal(hits, 1, 'the key should reach Nook exactly once');
+    assert.equal(hits, 1, 'the key should reach Magic Capsule exactly once');
     assert.equal(after.percent, before.percent, 'Windows changed the volume, so it saw the key too');
   });
 
-  await step('volume key: Nook steps the volume and shows the level', async () => {
+  await step('volume key: Magic Capsule steps the volume and shows the level', async () => {
     const before = await call('volume.get');
     const key = before.percent >= 98 ? 0xAE : 0xAF;
     const delta = key === 0xAF ? 2 : -2;
@@ -391,7 +391,7 @@ async function step(name, fn) {
     assert.equal(await page.evaluate(() => document.getElementById('notch').classList.contains('tucked')), false);
   });
 
-  // The AI's replies are scripted, so this tests Nook's hands and eyes, not a real model.
+  // The AI's replies are scripted, so this tests Magic Capsule's hands and eyes, not a real model.
   const scriptedAi = async (answers) => {
     const seen = [];
     const server = http.createServer((req, res) => {
@@ -452,13 +452,13 @@ async function step(name, fn) {
       // The text box sits near 240, 490 on the real screen. The AI speaks in screenshot pixels.
       const target = { x: 240 / scale, y: 490 / scale };
       ai = await scriptedAi([
-        tool('a', 'screenshot'), tool('b', 'click', target), tool('c', 'type_text', { text: 'Nook नमस्ते 123' }),
+        tool('a', 'screenshot'), tool('b', 'click', target), tool('c', 'type_text', { text: 'Magic Capsule नमस्ते 123' }),
         tool('d', 'screenshot'), tool('e', 'press_keys', { keys: 'alt+f4' }), { content: 'Typed it' },
       ]);
       await startTask('Type in the box');
       await agentEnded('Task finished', 40000);
       await sleep(600);
-      assert.equal(fs.readFileSync(box, 'utf8').replace(/^\uFEFF/, ''), 'Nook नमस्ते 123');
+      assert.equal(fs.readFileSync(box, 'utf8').replace(/^\uFEFF/, ''), 'Magic Capsule नमस्ते 123');
       const image = ai.seen[1].messages.flatMap((message) => (Array.isArray(message.content) ? message.content : [])).find((part) => part.type === 'image_url');
       assert.ok(image && image.image_url.url.length > 5000, 'a real screenshot reached the AI');
     } finally {

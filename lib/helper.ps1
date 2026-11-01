@@ -244,7 +244,7 @@ function Open-StartApp([string]$name) {
   $app.Name
 }
 
-# Compiled on first use, so a Nook that never runs the agent does not carry it.
+# Compiled on first use, so a Magic Capsule that never runs the agent does not carry it.
 function Use-NookUi {
   if ($script:uiReady) { return }
   Add-Type -AssemblyName UIAutomationClient, UIAutomationTypes, WindowsBase

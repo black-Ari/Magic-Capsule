@@ -408,7 +408,7 @@ test('screens: the open size fits each screen', () => {
   assert.equal(left.x, 1397, 'never spills onto the next screen');
 });
 
-test('screens: Nook appears only where you asked', () => {
+test('screens: Magic Capsule appears only where you asked', () => {
   const { describeDisplays, pickDisplays } = require('../lib/display-layout');
   const main = { id: 1, bounds: { x: 0, width: 1397, height: 786 } };
   const side = { id: 2, bounds: { x: 1397, width: 1360, height: 768 } };
@@ -540,7 +540,7 @@ test('drop: server flow and rejections', async () => {
 
     const page = await raw({ port, path: `/${token}/`, headers: good });
     assert.equal(page.status, 200);
-    assert.ok(page.body.includes('Nook Drop'));
+    assert.ok(page.body.includes('Magic Capsule Drop'));
 
     const list = await raw({ port, path: `/${token}/list`, headers: good });
     assert.deepEqual(JSON.parse(list.body), [{ id: 'abc', name: 'on-shelf.txt', size: 13 }], 'list exposes no paths');

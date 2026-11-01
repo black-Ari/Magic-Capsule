@@ -280,4 +280,4 @@ async function main() {
   if (state.shortcutError) toast(state.shortcutError, 'alert', 8000);
 }
 
-main().catch((err) => console.error('Nook failed to start', err));
+main().catch((err) => console.error('Magic Capsule failed to start', err));

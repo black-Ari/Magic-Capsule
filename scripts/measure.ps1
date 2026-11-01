@@ -1,9 +1,9 @@
 <#
 .SYNOPSIS
-  Measures RAM and CPU usage of Nook and its helper processes.
+  Measures RAM and CPU usage of Magic Capsule and its helper processes.
 
 .DESCRIPTION
-  Samples Nook processes and the helper process every 10 seconds (or chosen interval)
+  Samples Magic Capsule processes and the helper process every 10 seconds (or chosen interval)
   for a given duration, calculating Working Set, Private Bytes, and CPU usage as a
   share of one core.
 
@@ -34,7 +34,7 @@ function Get-NookProcMap {
         $cmd = if ($p.CommandLine) { $p.CommandLine } else { "" }
         if ($cmd -like '*measure.ps1*') { continue }
 
-        $isMainNook = ($p.Name -in @('Nook.exe', 'poni.exe') -and $cmd -notmatch '--type=') -or
+        $isMainNook = ($p.Name -in @('Magic Capsule.exe', 'poni.exe') -and $cmd -notmatch '--type=') -or
                       ($p.Name -eq 'electron.exe' -and $cmd -like '*poni*' -and $cmd -notmatch '--type=')
         if ($isMainNook) {
             $mainPids += $p.ProcessId
@@ -64,8 +64,8 @@ function Get-NookProcMap {
             continue
         }
 
-        $isElectronChild = ($p.Name -in @('Nook.exe', 'poni.exe', 'electron.exe')) -and
-                           ($mainPids -contains $p.ParentProcessId -or $cmd -like '*build_workspaces\poni*' -or $cmd -like '*\Programs\Nook\*')
+        $isElectronChild = ($p.Name -in @('Magic Capsule.exe', 'poni.exe', 'electron.exe')) -and
+                           ($mainPids -contains $p.ParentProcessId -or $cmd -like '*build_workspaces\poni*' -or $cmd -like '*\Programs\Magic Capsule\*')
 
         if ($isElectronChild) {
             $type = 'other'
@@ -97,11 +97,11 @@ function Get-NookProcMap {
     return $map
 }
 
-Write-Host "Looking for Nook and helper processes..." -ForegroundColor Cyan
+Write-Host "Looking for Magic Capsule and helper processes..." -ForegroundColor Cyan
 $initialMap = Get-NookProcMap
 
 if ($initialMap.Count -eq 0) {
-    Write-Warning "No Nook or helper processes found running! Start Nook first (e.g. run.bat or installed app)."
+    Write-Warning "No Magic Capsule or helper processes found running! Start Magic Capsule first (e.g. run.bat or installed app)."
     exit 1
 }
 

@@ -7,7 +7,7 @@ const HOUR_MS = 3600000;
 const PILL_WINDOW_MS = 15 * 60000;
 const GRID_DAYS = 42;
 const MAX_DOTS = 3;
-const NOOK_SOURCE = 'Nook';
+const NOOK_SOURCE = 'Magic Capsule';
 const COLOR_SLOTS = 6;
 const DURATIONS = [[0.5, '30 minutes'], [1, '1 hour'], [2, '2 hours'], [0, 'All day']];
 

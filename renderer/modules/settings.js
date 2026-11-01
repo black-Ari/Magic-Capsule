@@ -64,7 +64,7 @@ async function generalPage() {
   const shortcut = (key) => async (value) => { status.textContent = await saveSettings({ [key]: value }); };
   const enabled = s().modules.filter((item) => item.on).map((item) => [item.id, TOOL_NAMES[item.id]]);
   const screenRows = [
-    choice('Show Nook on', [
+    choice('Show Magic Capsule on', [
       ['primary', 'Main screen only'], ['all', 'Every screen'], ['one', 'One screen I choose'], ['follow', 'The screen my mouse is on'],
     ], s().displayMode, async (displayMode) => { await saveSettings({ displayMode }); draw(); },
     'Every screen gives each its own notch and tab, and uses more memory. Your data stays the same on all.'),
@@ -82,17 +82,17 @@ async function generalPage() {
       toggle('Remember the last tool', s().rememberTab, (rememberTab) => saveSettings({ rememberTab })),
       toggle('Start with Windows', s().startWithWindows, (startWithWindows) => saveSettings({ startWithWindows }))),
     section('Keyboard shortcuts',
-      text('Open or close Nook', s().shortcut, shortcut('shortcut'), { hint: 'For example Alt+N or Ctrl+Shift+Space. Leave empty to turn off.' }),
-      text('Snooze Nook', s().snoozeShortcut, shortcut('snoozeShortcut'), { hint: 'Hides it for a while. Press again to bring it back.' }),
+      text('Open or close Magic Capsule', s().shortcut, shortcut('shortcut'), { hint: 'For example Alt+N or Ctrl+Shift+Space. Leave empty to turn off.' }),
+      text('Snooze Magic Capsule', s().snoozeShortcut, shortcut('snoozeShortcut'), { hint: 'Hides it for a while. Press again to bring it back.' }),
       status,
       slider('Snooze duration', s().snoozeMinutes, 5, 240, ' min', (snoozeMinutes) => saveSettings({ snoozeMinutes }), { step: 5 }),
       toggle('Switch tools with left and right arrows', s().arrowTabs, (arrowTabs) => saveSettings({ arrowTabs }), 'Alt+Shift+arrows also work while typing')),
     section('Performance',
-      toggle('Use the graphics card', s().useGraphicsCard, (useGraphicsCard) => saveSettings({ useGraphicsCard }), 'Off uses less memory. Restart Nook after changing this.')),
+      toggle('Use the graphics card', s().useGraphicsCard, (useGraphicsCard) => saveSettings({ useGraphicsCard }), 'Off uses less memory. Restart Magic Capsule after changing this.')),
     section('Hiding',
       toggle('Auto-hide', s().autoHide, (autoHide) => saveSettings({ autoHide }), 'Leaves a thin line at the top. Alerts still come down.'),
       toggle('Step aside for full-screen apps', s().hideInFullscreen, (hideInFullscreen) => saveSettings({ hideInFullscreen })),
-      toggle('Show Nook in screenshots and recordings', s().showInScreenshots, (showInScreenshots) => saveSettings({ showInScreenshots }), 'Off hides it from screen sharing too')),
+      toggle('Show Magic Capsule in screenshots and recordings', s().showInScreenshots, (showInScreenshots) => saveSettings({ showInScreenshots }), 'Off hides it from screen sharing too')),
   ];
 }
 
@@ -121,7 +121,7 @@ function appearancePage() {
         ]),
     section('Place',
       slider('Left or right', s().position, 0, 100, '%', (position) => saveSettings({ position }), { hint: '50% is the centre of the screen' }),
-      slider('Gap from the top', s().topGap, 0, 120, ' px', (topGap) => saveSettings({ topGap }), { hint: 'Floats Nook as a rounded pill' })),
+      slider('Gap from the top', s().topGap, 0, 120, ' px', (topGap) => saveSettings({ topGap }), { hint: 'Floats Magic Capsule as a rounded pill' })),
   ];
 }
 
@@ -415,7 +415,7 @@ function apiTestRow() {
       const { tools, vision, settings } = await call('ai.test');
       state.settings = settings;
       status.textContent = `It works. Tools: ${word(tools)}. Pictures: ${word(vision)}.`
-        + `${tools === false ? ' Nook will use text tools for this model.' : ''}${vision === false ? ' It will read the screen as text.' : ''}`;
+        + `${tools === false ? ' Magic Capsule will use text tools for this model.' : ''}${vision === false ? ' It will read the screen as text.' : ''}`;
     } catch (err) {
       status.textContent = cleanError(err);
     }
@@ -666,13 +666,13 @@ function resetButton() {
 function aboutPage() {
   return [
     backupSection(),
-    section('Nook',
+    section('Magic Capsule',
       h('div', { class: 'setting' },
         h('span', { class: 'grow' }, 'Put every setting back to its default', h('div', { class: 'faint' }, 'Removes calendar links. Tasks, notes and API keys stay.')),
         resetButton()),
       h('div', { class: 'setting' },
-        h('span', { class: 'grow faint' }, 'All data stays on this PC in %APPDATA%\\Nook'),
-        h('button', { class: 'btn', type: 'button', onClick: () => call('app.quit') }, icon('x', 15), 'Quit Nook'))),
+        h('span', { class: 'grow faint' }, 'All data stays on this PC'),
+        h('button', { class: 'btn', type: 'button', onClick: () => call('app.quit') }, icon('x', 15), 'Quit Magic Capsule'))),
   ];
 }
 

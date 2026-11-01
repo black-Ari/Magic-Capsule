@@ -1,5 +1,5 @@
 // Windows and app controls for the AI agent. helper.ps1 compiles this the first time the agent needs
-// it, so Nook uses no extra memory for it otherwise. PowerShell 5.1 compiles C# 5 only.
+// it, so Magic Capsule uses no extra memory for it otherwise. PowerShell 5.1 compiles C# 5 only.
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
