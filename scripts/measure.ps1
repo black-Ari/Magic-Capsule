@@ -30,7 +30,10 @@ function Get-NookProcMap {
     # Find main nook process first
     $mainPids = @()
     foreach ($p in $cimProcs) {
+        if ($p.ProcessId -eq $PID) { continue }
         $cmd = if ($p.CommandLine) { $p.CommandLine } else { "" }
+        if ($cmd -like '*measure.ps1*') { continue }
+
         $isMainNook = ($p.Name -in @('Nook.exe', 'poni.exe') -and $cmd -notmatch '--type=') -or
                       ($p.Name -eq 'electron.exe' -and $cmd -like '*poni*' -and $cmd -notmatch '--type=')
         if ($isMainNook) {
@@ -45,10 +48,14 @@ function Get-NookProcMap {
 
     # Find children and helpers
     foreach ($p in $cimProcs) {
-        if ($map.ContainsKey($p.ProcessId)) { continue }
+        if ($map.ContainsKey($p.ProcessId) -or $p.ProcessId -eq $PID) { continue }
         $cmd = if ($p.CommandLine) { $p.CommandLine } else { "" }
+        if ($cmd -like '*measure.ps1*') { continue }
 
-        if ($cmd -like '*helper.ps1*' -or $p.Name -eq 'helper.exe') {
+        $isHelper = ($p.Name -eq 'powershell.exe' -and $cmd -match '-File\s+["'']?[^"'']*helper\.ps1') -or
+                    ($p.Name -eq 'helper.exe')
+
+        if ($isHelper) {
             $map[$p.ProcessId] = @{
                 Type = 'PowerShell helper'
                 Name = $p.Name
