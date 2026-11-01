@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nook Drop</title>
+<style>
+  :root { color-scheme: dark; --bg: #0a0a0b; --card: #18181b; --line: #2c2c31; --text: #f5f5f6; --muted: #a6a6ad; --accent: #8ecbff; --on-accent: #06121c; --danger: #ff7b72; }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 20px 16px 40px; background: var(--bg); color: var(--text); font: 16px/1.45 system-ui, sans-serif; }
+  main { display: grid; gap: 16px; max-width: 520px; margin: 0 auto; }
+  h1 { margin: 0; font-size: 22px; }
+  h2 { margin: 0 0 8px; color: var(--muted); font-size: 14px; font-weight: 600; }
+  section { padding: 14px; border: 1px solid var(--line); border-radius: 16px; background: var(--card); }
+  button, .pick { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 48px; border: 0; border-radius: 12px; background: var(--accent); color: var(--on-accent); font: inherit; font-weight: 600; }
+  textarea { width: 100%; min-height: 90px; margin-bottom: 8px; padding: 10px; border: 1px solid var(--line); border-radius: 12px; background: var(--bg); color: inherit; font: inherit; resize: vertical; }
+  input[type=file] { position: absolute; width: 1px; height: 1px; opacity: 0; }
+  a.file { display: flex; gap: 10px; justify-content: space-between; padding: 12px 0; border-top: 1px solid var(--line); color: inherit; text-decoration: none; }
+  a.file:first-of-type { border-top: 0; }
+  .name { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .muted { color: var(--muted); font-size: 14px; }
+  progress { width: 100%; margin-top: 10px; accent-color: var(--accent); }
+  .status { margin-top: 8px; font-size: 14px; }
+  .error { color: var(--danger); }
+  nav { display: flex; gap: 6px; }
+  nav button { background: var(--card); color: var(--text); border: 1px solid var(--line); min-height: 42px; }
+  nav button.on { background: var(--accent); color: var(--on-accent); }
+  [hidden] { display: none !important; }
+  #pad { height: 46vh; min-height: 230px; border: 1px solid var(--line); border-radius: 16px; background: var(--bg); touch-action: none; display: grid; place-items: center; color: var(--muted); user-select: none; -webkit-user-select: none; }
+  .keys { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .keys button { min-height: 46px; padding: 2px; background: #26262b; color: var(--text); font-size: 14px; font-weight: 500; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px; }
+  .send { display: flex; gap: 6px; }
+  .send input { flex: 1; min-width: 0; padding: 10px; border: 1px solid var(--line); border-radius: 12px; background: var(--bg); color: inherit; font: inherit; }
+  .send button { width: 84px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Nook</h1>
+  <nav><button id="showFiles" class="on" type="button">Files</button><button id="showRemote" type="button">Control PC</button></nav>
+  <section id="remoteOff" hidden><h2>Control PC</h2>Turn on "Let the phone control this PC" in Nook, on the PC, then press Control PC again.</section>
+  <div id="remote" hidden style="display:grid;gap:16px">
+    <section>
+      <div id="pad">Move with one finger, tap to click, two fingers to scroll</div>
+      <div class="two"><button id="left" type="button">Left click</button><button id="right" type="button">Right click</button></div>
+    </section>
+    <section>
+      <h2>Keyboard</h2>
+      <div class="send"><input id="typed" type="text" autocomplete="off" aria-label="Text to type on the PC" placeholder="Type here"><button id="sendTyped" type="button">Send</button></div>
+      <div class="keys" id="keyGrid" style="margin-top:8px"></div>
+    </section>
+    <section><h2>Music and sound</h2><div class="keys" id="mediaGrid"></div></section>
+    <section><h2>Shortcuts and slides</h2><div class="keys" id="deckGrid"></div><div id="remoteStatus" class="status"></div></section>
+  </div>
+  <div id="files" style="display:grid;gap:16px">
+  <section>
+    <h2>Send files to your PC</h2>
+    <label class="pick">Choose files<input id="files" type="file" multiple></label>
+    <progress id="bar" max="1" value="0" hidden></progress>
+    <div id="uploadStatus" class="status"></div>
+  </section>
+  <section>
+    <h2>Send text to your PC clipboard</h2>
+    <textarea id="text" placeholder="Type or paste here"></textarea>
+    <button id="sendText" type="button">Send text</button>
+    <div id="textStatus" class="status"></div>
+  </section>
+  <section>
+    <h2>Files on your PC shelf</h2>
+    <div id="list" class="muted">Loading...</div>
+  </section>
+  </div>
+</main>
+<script>
+  const $ = (id) => document.getElementById(id);
+
+  const size = (bytes) => {
+    const units = ['B', 'KB', 'MB', 'GB'];
+    let value = bytes;
+    let unit = 0;
+    while (value >= 1024 && unit < units.length - 1) { value /= 1024; unit += 1; }
+    return `${value.toFixed(unit > 1 ? 1 : 0)} ${units[unit]}`;
+  };
+
+  function say(id, message, failed) {
+    $(id).textContent = message;
+    $(id).className = failed ? 'status error' : 'status';
+  }
+
+  function upload(file) {
+    return new Promise((resolve, reject) => {
+      const request = new XMLHttpRequest();
+      request.open('POST', 'upload');
+      request.setRequestHeader('X-File-Name', encodeURIComponent(file.name));
+      request.upload.onprogress = (event) => { $('bar').value = event.lengthComputable ? event.loaded / event.total : 0; };
+      request.onload = () => (request.status === 200 ? resolve() : reject(new Error(request.responseText || 'Upload failed')));
+      request.onerror = () => reject(new Error('Connection lost'));
+      request.send(file);
+    });
+  }
+
+  $('files').addEventListener('change', async (event) => {
+    const files = [...event.target.files];
+    if (!files.length) return;
+    $('bar').hidden = false;
+    let sent = 0;
+    try {
+      for (const file of files) {
+        say('uploadStatus', `Sending ${file.name}`);
+        await upload(file);
+        sent += 1;
+      }
+      say('uploadStatus', `${sent} file${sent === 1 ? '' : 's'} sent`);
+    } catch (err) {
+      say('uploadStatus', err.message, true);
+    }
+    $('bar').hidden = true;
+    event.target.value = '';
+  });
+
+  $('sendText').addEventListener('click', async () => {
+    const body = $('text').value;
+    if (!body.trim()) return;
+    try {
+      const response = await fetch('text', { method: 'POST', body });
+      if (!response.ok) throw new Error(await response.text());
+      $('text').value = '';
+      say('textStatus', 'Copied to your PC clipboard');
+    } catch (err) {
+      say('textStatus', err.message, true);
+    }
+  });
+
+  async function loadList() {
+    try {
+      const files = await (await fetch('list')).json();
+      const list = $('list');
+      list.textContent = files.length ? '' : 'Nothing parked on the shelf';
+      for (const file of files) {
+        const link = document.createElement('a');
+        link.className = 'file';
+        link.href = `file/${file.id}`;
+        const name = document.createElement('span');
+        name.className = 'name';
+        name.textContent = file.name;
+        const meta = document.createElement('span');
+        meta.className = 'muted';
+        meta.textContent = size(file.size);
+        link.append(name, meta);
+        list.append(link);
+      }
+    } catch {
+      $('list').textContent = 'Could not load the list';
+    }
+  }
+
+  loadList();
+
+  // Control PC. Moves are added up and sent one request at a time, so a slow Wi-Fi moment cannot queue them.
+  const SPEED = 1.8;
+  const TAP_MS = 220;
+  const TAP_MOVE = 6;
+  const SCROLL_STEP = 24;
+  const KEY_ROWS = [['Enter', 'enter'], ['Delete', 'backspace'], ['Esc', 'esc'], ['Tab', 'tab'], ['Left', 'left'], ['Up', 'up'], ['Down', 'down'], ['Right', 'right']];
+  const DECK = [['Switch app', 'alt+tab'], ['Desktop', 'win+d'], ['Files', 'win+e'], ['Close', 'alt+f4'], ['Copy', 'ctrl+c'], ['Paste', 'ctrl+v'], ['Undo', 'ctrl+z'], ['Save', 'ctrl+s'], ['New tab', 'ctrl+t'], ['Start slides', 'f5'], ['Back slide', 'left'], ['Next slide', 'right']];
+  const post = (action) => fetch('remote', { method: 'POST', body: JSON.stringify(action) }).then(async (response) => {
+    if (!response.ok) say('remoteStatus', await response.text(), true);
+  }).catch(() => say('remoteStatus', 'Connection lost', true));
+  const addKeys = (grid, items) => items.forEach(([label, action]) => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.textContent = label;
+    button.addEventListener('click', () => post(action));
+    $(grid).append(button);
+  });
+  addKeys('keyGrid', KEY_ROWS.map(([label, keys]) => [label, { type: 'key', keys }]));
+  addKeys('deckGrid', [...DECK.map(([label, keys]) => [label, { type: 'key', keys }]), ['Lock PC', { type: 'lock' }], ['Screen off', { type: 'screenOff' }]]);
+  addKeys('mediaGrid', [['Back', { type: 'media', action: 'prev' }], ['Play', { type: 'media', action: 'toggle' }], ['Next', { type: 'media', action: 'next' }], ['Mute', { type: 'mute' }], ['Volume down', { type: 'volume', up: false }], ['Volume up', { type: 'volume', up: true }]]);
+  $('left').addEventListener('click', () => post({ type: 'click', button: 'left' }));
+  $('right').addEventListener('click', () => post({ type: 'click', button: 'right' }));
+  $('sendTyped').addEventListener('click', async () => {
+    if (!$('typed').value) return;
+    await post({ type: 'text', text: $('typed').value });
+    $('typed').value = '';
+  });
+
+  let held = { dx: 0, dy: 0 };
+  let sending = false;
+  async function flush() {
+    if (sending || (!held.dx && !held.dy)) return;
+    sending = true;
+    const { dx, dy } = held;
+    held = { dx: 0, dy: 0 };
+    await post({ type: 'move', dx, dy });
+    sending = false;
+    flush();
+  }
+
+  let last = null;
+  let travelled = 0;
+  let startedAt = 0;
+  let fingers = 0;
+  let scrollLeft = 0;
+  const pad = $('pad');
+  const at = (touch) => ({ x: touch.clientX, y: touch.clientY });
+  pad.addEventListener('touchstart', (event) => {
+    event.preventDefault();
+    fingers = Math.max(event.touches.length, event.touches.length > 1 ? fingers : 1);
+    if (event.touches.length === 1) { startedAt = Date.now(); travelled = 0; }
+    last = at(event.touches[0]);
+  }, { passive: false });
+  pad.addEventListener('touchmove', (event) => {
+    event.preventDefault();
+    const now = at(event.touches[0]);
+    const dx = now.x - last.x;
+    const dy = now.y - last.y;
+    last = now;
+    travelled += Math.abs(dx) + Math.abs(dy);
+    if (event.touches.length > 1) {
+      scrollLeft += dy;
+      const notches = Math.trunc(scrollLeft / SCROLL_STEP);
+      if (notches) { scrollLeft -= notches * SCROLL_STEP; post({ type: 'scroll', notches }); }
+      return;
+    }
+    held.dx += Math.round(dx * SPEED);
+    held.dy += Math.round(dy * SPEED);
+    flush();
+  }, { passive: false });
+  pad.addEventListener('touchend', (event) => {
+    event.preventDefault();
+    if (event.touches.length) return;
+    if (Date.now() - startedAt < TAP_MS && travelled < TAP_MOVE) post({ type: 'click', button: fingers > 1 ? 'right' : 'left' });
+    fingers = 0;
+  }, { passive: false });
+
+  function showPage(remote, allowed) {
+    $('files').hidden = remote;
+    $('remote').hidden = !remote || !allowed;
+    $('remoteOff').hidden = !remote || allowed;
+    $('showFiles').className = remote ? '' : 'on';
+    $('showRemote').className = remote ? 'on' : '';
+  }
+  $('showFiles').addEventListener('click', () => showPage(false, false));
+  $('showRemote').addEventListener('click', async () => {
+    const { allowed } = await (await fetch('remote')).json();
+    showPage(true, allowed);
+  });
+</script>
+</body>
+</html>
