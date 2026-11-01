@@ -22,7 +22,7 @@
     "productName": "Nook",
     "publish": null,
     "asar": true,
-    "asarUnpack": ["lib/helper.ps1", "lib/helper-ui.cs", "lib/helper-control.ps1", "lib/helper-control.cs"],
+    "asarUnpack": ["lib/helper-service.exe", "lib/helper.ps1", "lib/helper-native.cs", "lib/helper-ui.cs", "lib/helper-control.ps1", "lib/helper-control.cs"],
     "directories": { "output": "dist" },
     "files": [
       "main.js", "preload.js", "lib/**/*", "renderer/**/*", "assets/**/*", "package.json", "node_modules/**/*",

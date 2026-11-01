@@ -1,3 +1,10 @@
 node_modules/
 dist/
 *.log
+.env
+.env.*
+*.pem
+*.key
+lib/helper-service.exe
+scripts/baseline-*.json
+scripts/measure-*.json
