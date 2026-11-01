@@ -7,6 +7,7 @@ let clocks = [];
 let stopwatch = { startedAt: 0, elapsed: 0 };
 let ui = null;
 let wasFocusing = false;
+let wasBusy = false;
 
 const secondsLeft = (endsAt) => (endsAt - Date.now()) / 1000;
 const pomoLeft = () => (pomo.running ? secondsLeft(pomo.endsAt) : pomo.remaining);
@@ -80,6 +81,13 @@ function tick() {
     setActivity('timer', null);
   }
   paint();
+}
+
+// Runs only while something is counting, with one more pass to clear the notch when it ends.
+function heartbeat() {
+  const busy = pomo.running || timers.length > 0 || Boolean(stopwatch.startedAt);
+  if (busy || wasBusy) tick();
+  wasBusy = busy;
 }
 
 function paint() {
@@ -197,7 +205,7 @@ export default {
     setPhase('focus');
     // A running timer keeps its length; new lengths apply from the next phase.
     listen('settings', () => { if (!pomo.running) { setPhase(pomo.phase); paint(); } });
-    setInterval(tick, 500);
+    setInterval(heartbeat, 500);
   },
 
   render(view) {

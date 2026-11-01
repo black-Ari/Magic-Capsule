@@ -45,6 +45,7 @@ const VOLUME_STEP = 2;
 const AGENT_STOP_KEY = 'Ctrl+Alt+Q';
 const AGENT_LOOK_DELAY_MS = 500;
 const MAX_MEMORY_FACTS = 100;
+const PET_IDLE_STEP_S = 15; // the pet hears about idle time in steps, not every second
 const NEW_SKILLS = ['GST filing', 'ITR filing'];
 
 let fleet;
@@ -59,6 +60,7 @@ let browser;
 let aiHistory;
 let pc;
 let phoneRemote;
+let lastForPet = '';
 let screenTime;
 let settingsCache;
 let calendarState = { events: [], errors: [], at: 0 };
@@ -542,7 +544,12 @@ function setupHelper() {
     if (settings().screenTime.on) screenTime.record(state, settings().screenTime.idle);
     fleet.setFullscreen(state.fullscreen, { x: state.x, y: state.y });
     fleet.forHandle(state.handle)?.foregroundIsOurs();
-    if (settings().pet.on) send('foreground', { app: state.app, idle: state.idle });
+    // Waking the page every second for a pet that has nothing new to do keeps the notch from resting.
+    const forPet = `${state.app}|${Math.floor(state.idle / PET_IDLE_STEP_S)}`;
+    if (settings().pet.on && forPet !== lastForPet) {
+      lastForPet = forPet;
+      send('foreground', { app: state.app, idle: state.idle });
+    }
   });
   helper.on('failed', (reason) => toast(`Windows helper stopped: ${reason}`.slice(0, 80), 'alert'));
   helper.start();

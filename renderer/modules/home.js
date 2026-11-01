@@ -70,6 +70,8 @@ function sneakPeek() {
   });
 }
 
+let notchOpen = false;
+
 const trackKey = () => (media ? `${media.title}|${media.artist}` : '');
 
 async function loadLyrics() {
@@ -82,6 +84,7 @@ async function loadLyrics() {
 }
 
 function paintLyric() {
+  if (!lyrics.length && !lyricLine) return;
   const now = position();
   const line = media && media.playing ? [...lyrics].reverse().find((item) => item.at <= now)?.text || '' : '';
   if (line === lyricLine) return;
@@ -101,8 +104,15 @@ function drawMusic() {
   paintProgress();
 }
 
+// Nothing moves unless music is playing, and nobody can see the panel while the notch is closed, so
+// the timer writes to the page only then. Writing every second kept a closed notch redrawing.
+function tickProgress() {
+  if (!media?.playing) return;
+  if (state.settings.live.progress) updatePill();
+  if (notchOpen) paintProgress();
+}
+
 function paintProgress() {
-  if (state.settings.live.progress && media && media.playing) updatePill();
   if (!ui) return;
   const duration = media?.duration || 0;
   ui.elapsed.textContent = media ? fmtClock(Math.floor(position())) : '';
@@ -219,9 +229,13 @@ export default {
       drawGlance();
       if (Boolean(state.settings.lyrics) !== Boolean(lyrics.length)) loadLyrics();
     });
-    setInterval(paintProgress, 1000);
+    listen('notch', (open) => {
+      notchOpen = open;
+      if (open) paintProgress();
+    });
+    setInterval(tickProgress, 1000);
     setInterval(paintLyric, 400);
-    setInterval(drawGlance, 60000);
+    setInterval(() => { if (notchOpen) drawGlance(); }, 60000);
   },
 
   render(view) {
